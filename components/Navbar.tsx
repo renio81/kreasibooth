@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Store } from 'lucide-react';
 
@@ -12,6 +13,7 @@ const Navbar: React.FC = () => {
     { name: 'Layanan', href: '#services' },
     { name: 'Portofolio', href: '#portfolio' },
     { name: 'Desain AI', href: '#ai-consultant' },
+    { name: 'Jasa Desain', href: '#design-services' },
     { name: 'Testimoni', href: '#testimonials' },
     { name: 'Simulasi', href: '#simulation' },
     { name: 'Pemesanan', href: '#order' },
