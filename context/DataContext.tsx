@@ -119,7 +119,7 @@ const defaultGeneralSettings: GeneralSettings = {
   address: "Jakarta Selatan",
   instagram: "@kreasibooth",
   email: "admin@kreasibooth.com",
-  workshopVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-working-in-a-carpentry-workshop-40502-large.mp4"
+  workshopVideoUrl: "https://www.kapwing.com/w/L2YVhiEXHL"
 };
 
 interface DataContextType {

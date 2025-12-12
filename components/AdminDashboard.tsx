@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { Project, Testimonial, ProductItem, ServiceItem, HeroSlide, GeneralSettings, PricingItem, GalleryItem, DesignServiceItem } from '../types';
-import { Trash2, Edit, Plus, X, LogOut, RefreshCw, Save, Settings as SettingsIcon, Calculator, Image as ImageIcon, Video, PenTool } from 'lucide-react';
+import { Trash2, Edit, Plus, X, LogOut, RefreshCw, Save, Settings as SettingsIcon, Calculator, Image as ImageIcon, Video, PenTool, Link, FileVideo, Upload } from 'lucide-react';
 import { availableIcons, getIconComponent } from '../utils/iconMapper';
 
 interface EditModalProps {
@@ -374,6 +374,14 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     setIsModalOpen(false);
   };
 
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setSettingsForm({ ...settingsForm, workshopVideoUrl: url });
+    }
+  };
+
   const handleSettingsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateGeneralSettings(settingsForm);
@@ -591,18 +599,71 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
                       <Video size={20} className="text-orange-500" /> Pengaturan Video Workshop
                    </h3>
-                   <div className="flex gap-4">
-                      <input 
-                         className="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none" 
-                         placeholder="URL Video (MP4 link)"
-                         value={settingsForm.workshopVideoUrl || ''}
-                         onChange={(e) => setSettingsForm({...settingsForm, workshopVideoUrl: e.target.value})}
-                      />
-                      <button onClick={handleSettingsSubmit} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold">
-                         Update Video
-                      </button>
+                   
+                   <div className="space-y-4">
+                       <div>
+                           <label className="block text-sm font-medium text-slate-700 mb-2">Upload Video File (.mp4)</label>
+                           <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer group bg-white">
+                               <input 
+                                   type="file" 
+                                   accept="video/mp4"
+                                   onChange={handleVideoUpload}
+                                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                               />
+                               <div className="flex flex-col items-center gap-2">
+                                   <div className="p-3 bg-orange-100 text-orange-600 rounded-full group-hover:scale-110 transition-transform">
+                                       <Upload size={24} />
+                                   </div>
+                                   <p className="text-sm font-medium text-slate-600">
+                                       Klik untuk upload atau seret file MP4 ke sini
+                                   </p>
+                                   <p className="text-xs text-slate-400">Maksimal ukuran file menyesuaikan memori browser</p>
+                               </div>
+                           </div>
+                       </div>
+
+                       <div>
+                           <label className="block text-sm font-medium text-slate-700 mb-1">Atau gunakan URL (Embed/Link)</label>
+                           <div className="flex gap-4">
+                              <div className="relative flex-1">
+                                  <input 
+                                     className="w-full border rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-600" 
+                                     placeholder="Paste URL Video .mp4 atau Link Embed YouTube..."
+                                     value={settingsForm.workshopVideoUrl || ''}
+                                     onChange={(e) => setSettingsForm({...settingsForm, workshopVideoUrl: e.target.value})}
+                                  />
+                                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                    <Link size={18} />
+                                  </div>
+                              </div>
+                              <button onClick={handleSettingsSubmit} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-md transition-all">
+                                 Simpan
+                              </button>
+                           </div>
+                       </div>
+
+                       <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 flex gap-3">
+                           <div className="bg-white p-2 rounded-full h-fit text-blue-500 shadow-sm">
+                               <FileVideo size={20} />
+                           </div>
+                           <div>
+                               <h4 className="font-bold text-blue-800 text-sm">Preview Video Aktif:</h4>
+                               {settingsForm.workshopVideoUrl ? (
+                                   <div className="mt-2 rounded-lg overflow-hidden border border-blue-200 shadow-sm max-w-md bg-black aspect-video relative">
+                                      {settingsForm.workshopVideoUrl.endsWith('.mp4') || settingsForm.workshopVideoUrl.startsWith('blob:') ? (
+                                          <video src={settingsForm.workshopVideoUrl} controls className="w-full h-full object-cover" />
+                                      ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-white text-xs">
+                                              Preview Link Eksternal
+                                          </div>
+                                      )}
+                                   </div>
+                               ) : (
+                                   <p className="text-sm text-blue-600 mt-1 italic">Belum ada video dipilih.</p>
+                               )}
+                           </div>
+                       </div>
                    </div>
-                   <p className="text-xs text-slate-500 mt-2">Masukkan link video format .mp4 agar dapat diputar langsung di halaman portofolio.</p>
                 </div>
 
                 <div>

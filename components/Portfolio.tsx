@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn, PlayCircle } from 'lucide-react';
 import { useData } from '../context/DataContext';
@@ -107,6 +106,26 @@ const Portfolio: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedProject, handleNext, handlePrev]);
+
+  // Helper to process Kapwing/YouTube URLs to Embed format
+  const getEmbedUrl = (url: string) => {
+    if (!url) return '';
+    
+    // Kapwing Workspace to Embed
+    if (url.includes('kapwing.com/w/')) {
+        return url.replace('/w/', '/e/');
+    }
+    
+    // YouTube Watch to Embed
+    if (url.includes('youtube.com/watch?v=')) {
+        return url.replace('watch?v=', 'embed/');
+    }
+    if (url.includes('youtu.be/')) {
+        return url.replace('youtu.be/', 'youtube.com/embed/');
+    }
+
+    return url;
+  };
 
   return (
     <section id="portfolio" className="py-20 bg-white scroll-mt-24">
@@ -264,25 +283,30 @@ const Portfolio: React.FC = () => {
                  <h4 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                     <PlayCircle className="text-orange-500" size={24} /> Workshop Activity
                  </h4>
-                 <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black aspect-video group">
-                    <video 
-                      key={generalSettings.workshopVideoUrl} // Force re-render when URL changes
-                      autoPlay 
-                      loop 
-                      muted 
-                      playsInline
-                      controls
-                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                    >
-                      <source src={generalSettings.workshopVideoUrl} type="video/mp4" />
-                      Browser Anda tidak mendukung tag video.
-                    </video>
-                    
-                    {/* Overlay Title - Hidden when playing usually, but good for context */}
-                    <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm p-4 rounded-xl border border-white/10 pointer-events-none">
-                        <p className="text-white font-semibold text-sm">Proses Produksi</p>
-                        <p className="text-slate-300 text-xs">Kami memastikan setiap detail dikerjakan dengan presisi tinggi di workshop kami.</p>
-                    </div>
+                 <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black aspect-video group border border-slate-100">
+                    {/* Prioritaskan Embed Iframe kecuali jika extension .mp4 */}
+                    {generalSettings.workshopVideoUrl && generalSettings.workshopVideoUrl.endsWith('.mp4') ? (
+                         <video 
+                           key={generalSettings.workshopVideoUrl}
+                           autoPlay 
+                           loop 
+                           muted 
+                           playsInline
+                           controls
+                           className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                         >
+                           <source src={generalSettings.workshopVideoUrl} type="video/mp4" />
+                           Browser Anda tidak mendukung tag video.
+                         </video>
+                    ) : (
+                        <iframe 
+                            src={getEmbedUrl(generalSettings.workshopVideoUrl)}
+                            className="w-full h-full border-none"
+                            title="Workshop Video"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                        ></iframe>
+                    )}
                  </div>
               </div>
 
