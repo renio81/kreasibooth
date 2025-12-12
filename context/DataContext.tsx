@@ -113,12 +113,12 @@ const defaultDesignServices: DesignServiceItem[] = [
 
 const defaultGeneralSettings: GeneralSettings = {
   aboutTitle: "Mitra Terpercaya Membangun Branding Usaha Anda",
-  aboutDescription: "CiptaKreasiBooth berdiri sejak 2015, berawal dari bengkel las kecil kini menjadi spesialis manufaktur booth dan gerobak modern. Kami memadukan seni desain dengan ketahanan konstruksi untuk menciptakan tempat usaha yang tidak hanya fungsional, tapi juga 'Instagrammable'.",
+  aboutDescription: "KreasiBooth berdiri sejak 2015, berawal dari bengkel las kecil kini menjadi spesialis manufaktur booth dan gerobak modern. Kami memadukan seni desain dengan ketahanan konstruksi untuk menciptakan tempat usaha yang tidak hanya fungsional, tapi juga 'Instagrammable'.",
   aboutImage: "https://picsum.photos/id/1/800/600",
   whatsapp: "6281316426495",
   address: "Jakarta Selatan",
-  instagram: "@ciptakreasibooth",
-  email: "admin@ciptakreasibooth.com",
+  instagram: "@kreasibooth",
+  email: "admin@kreasibooth.com",
   workshopVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-working-in-a-carpentry-workshop-40502-large.mp4"
 };
 

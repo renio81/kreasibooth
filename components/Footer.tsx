@@ -13,8 +13,8 @@ const Footer: React.FC<FooterProps> = ({ onAdminLogin }) => {
     <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
-          <span className="font-bold text-2xl text-white">Cipta<span className="text-orange-500">KreasiBooth</span></span>
-          <p className="mt-2 text-sm">© {new Date().getFullYear()} CiptaKreasiBooth Indonesia. All rights reserved.</p>
+          <span className="font-bold text-2xl text-white">Kreasi<span className="text-orange-500">Booth</span></span>
+          <p className="mt-2 text-sm">© {new Date().getFullYear()} KreasiBooth Indonesia. All rights reserved.</p>
           <p className="text-xs mt-1 text-slate-500">{generalSettings.email}</p>
         </div>
         <div className="flex items-center space-x-6 text-sm">

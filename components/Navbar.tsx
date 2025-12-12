@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
               <Store size={24} />
             </div>
             <span className={`font-bold text-2xl ${isScrolled ? 'text-slate-800' : 'text-slate-800 md:text-white'} transition-colors`}>
-              Cipta<span className="text-orange-500">KreasiBooth</span>
+              Kreasi<span className="text-orange-500">Booth</span>
             </span>
           </div>
           

@@ -36,7 +36,7 @@ const Hero: React.FC = () => {
     return (
       <section id="home" className="relative h-screen w-full bg-slate-900 flex items-center justify-center">
         <div className="text-white text-center">
-          <h1 className="text-4xl font-bold">Selamat Datang di CiptaKreasiBooth</h1>
+          <h1 className="text-4xl font-bold">Selamat Datang di KreasiBooth</h1>
           <p className="mt-4">Silakan tambahkan banner slide di Admin Dashboard.</p>
         </div>
       </section>

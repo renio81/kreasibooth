@@ -86,7 +86,7 @@ const OrderForm: React.FC = () => {
       .filter(Boolean)
       .join(', ');
 
-    const message = `Halo CiptaKreasiBooth, saya telah melakukan pembayaran:
+    const message = `Halo KreasiBooth, saya telah melakukan pembayaran:
 
 *STATUS PEMBAYARAN: LUNAS ✅*
 ID Transaksi: ${transactionId}

@@ -112,7 +112,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, it
             <div className="text-center space-y-6">
               {selectedMethod === 'qris' && (
                 <div className="bg-white p-4 border rounded-xl shadow-inner inline-block">
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CiptaKreasiBoothPayment" alt="QRIS" className="mx-auto" />
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=KreasiBoothPayment" alt="QRIS" className="mx-auto" />
                 </div>
               )}
 

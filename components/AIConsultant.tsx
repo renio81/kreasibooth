@@ -37,7 +37,7 @@ const AIConsultant: React.FC = () => {
     if (!imageResult) return;
     const link = document.createElement('a');
     link.href = imageResult;
-    link.download = `ciptakreasibooth-design-${Date.now()}.png`;
+    link.download = `kreasibooth-design-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

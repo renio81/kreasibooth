@@ -399,7 +399,7 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     <div className="min-h-screen bg-slate-100 font-sans">
       <div className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md sticky top-0 z-40">
         <div className="flex items-center gap-2">
-            <span className="font-bold text-xl">CiptaKreasiBooth <span className="text-orange-500">Admin</span></span>
+            <span className="font-bold text-xl">KreasiBooth <span className="text-orange-500">Admin</span></span>
             <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded border border-orange-500/30">CMS Dashboard</span>
         </div>
         <div className="flex items-center gap-4">
