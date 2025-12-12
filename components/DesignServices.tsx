@@ -41,7 +41,7 @@ const DesignServices: React.FC = () => {
   const handlePaymentSuccess = (transactionId: string) => {
     setIsPaymentOpen(false);
     
-    const message = `Halo Admin CiptaKreasiBooth, saya telah melakukan pembayaran untuk *Jasa Desain*:
+    const message = `Halo Admin KreasiBooth, saya telah melakukan pembayaran untuk *Jasa Desain*:
 
 *STATUS PEMBAYARAN: LUNAS ✅*
 ID Transaksi: ${transactionId}
