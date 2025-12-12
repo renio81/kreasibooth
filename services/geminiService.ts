@@ -3,6 +3,10 @@ import { GoogleGenAI } from "@google/genai";
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const generateDesignConcept = async (businessIdea: string): Promise<string> => {
+  if (!process.env.API_KEY) {
+    return "Maaf, API Key belum dikonfigurasi. Silakan hubungi administrator.";
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -20,11 +24,16 @@ export const generateDesignConcept = async (businessIdea: string): Promise<strin
     return response.text || "Maaf, kami sedang mengalami gangguan koneksi ke AI Designer.";
   } catch (error) {
     console.error("Error generating concept:", error);
-    return "Maaf, terjadi kesalahan saat menghubungi asisten desain kami.";
+    return "Maaf, terjadi kesalahan saat menghubungi asisten desain kami. Silakan coba lagi nanti.";
   }
 };
 
 export const generateBoothImage = async (prompt: string): Promise<string | null> => {
+  if (!process.env.API_KEY) {
+    console.error("API Key missing for image generation");
+    return null;
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
