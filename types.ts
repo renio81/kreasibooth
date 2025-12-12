@@ -20,7 +20,7 @@ export interface ServiceItem {
   id: number;
   title: string;
   description: string;
-  iconName: string; // Changed from icon component to string name for storage
+  iconName: string; 
   color: string;
 }
 
@@ -28,7 +28,7 @@ export interface ProductItem {
   id: number;
   name: string;
   type: string;
-  iconName: string; // Changed from icon component to string name for storage
+  iconName: string; 
 }
 
 export interface HeroSlide {
@@ -43,7 +43,7 @@ export interface PricingItem {
   name: string;
   type: 'material' | 'addon';
   price: number;
-  unit: string; // e.g., 'm' for meter lari, 'unit' for fixed item
+  unit: string; 
 }
 
 export interface GalleryItem {
@@ -82,4 +82,15 @@ export interface PriceSimulationConfig {
   height: number;
   materialId: number;
   selectedAddons: number[];
+}
+
+export type PaymentMethodType = 'qris' | 'bank_transfer' | 'ewallet';
+
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  type: PaymentMethodType;
+  iconName: string;
+  accountNumber?: string;
+  accountName?: string;
 }

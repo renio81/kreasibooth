@@ -15,7 +15,7 @@ const AIConsultant: React.FC = () => {
     if (!prompt.trim()) return;
 
     setLoadingText(true);
-    setTextResult(null); // Clear previous result
+    setTextResult(null); 
     setActiveTab('text');
     const aiResponse = await generateDesignConcept(prompt);
     setTextResult(aiResponse);
@@ -26,7 +26,7 @@ const AIConsultant: React.FC = () => {
     if (!prompt.trim()) return;
 
     setLoadingImage(true);
-    setImageResult(null); // Clear previous result
+    setImageResult(null); 
     setActiveTab('image');
     const imageBase64 = await generateBoothImage(prompt);
     setImageResult(imageBase64);
@@ -37,7 +37,7 @@ const AIConsultant: React.FC = () => {
     if (!imageResult) return;
     const link = document.createElement('a');
     link.href = imageResult;
-    link.download = `kreasibooth-design-${Date.now()}.png`;
+    link.download = `ciptakreasibooth-design-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -53,7 +53,6 @@ const AIConsultant: React.FC = () => {
 
   return (
     <section id="ai-consultant" className="py-24 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white relative overflow-hidden scroll-mt-20">
-      {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600 rounded-full blur-[100px]"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600 rounded-full blur-[100px]"></div>
@@ -102,7 +101,6 @@ const AIConsultant: React.FC = () => {
             </div>
         </div>
 
-        {/* Results Area */}
         {(textResult || imageResult) && (
           <div className="mt-12 animate-fade-in">
              <div className="flex justify-center gap-4 mb-6">

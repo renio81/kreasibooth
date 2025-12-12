@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Store } from 'lucide-react';
 
@@ -21,12 +20,10 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Handle background transparency
       setIsScrolled(window.scrollY > 50);
 
-      // Handle active section
       const sections = navLinks.map(link => link.href.substring(1));
-      const scrollPosition = window.scrollY + 120; // Offset for fixed header
+      const scrollPosition = window.scrollY + 120;
 
       let current = 'home';
       for (const section of sections) {
@@ -60,7 +57,7 @@ const Navbar: React.FC = () => {
               <Store size={24} />
             </div>
             <span className={`font-bold text-2xl ${isScrolled ? 'text-slate-800' : 'text-slate-800 md:text-white'} transition-colors`}>
-              Kreasi<span className="text-orange-500">Booth</span>
+              Cipta<span className="text-orange-500">KreasiBooth</span>
             </span>
           </div>
           
@@ -95,7 +92,6 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <div className={`lg:hidden absolute w-full bg-white border-t border-slate-100 shadow-lg transition-all duration-300 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="px-4 pt-2 pb-6 space-y-1">
           {navLinks.map((link) => (

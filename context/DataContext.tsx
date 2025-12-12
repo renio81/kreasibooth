@@ -1,8 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Project, Testimonial, ServiceItem, ProductItem, HeroSlide, GeneralSettings, PricingItem, GalleryItem, DesignServiceItem } from '../types';
 
-// Default Data (used if localStorage is empty)
 const defaultProjects: Project[] = [
   { id: 1, title: "Kopi Kenangan Senja", category: "food", image: "https://picsum.photos/id/425/600/400", description: "Booth Container Minimalis" },
   { id: 2, title: "Martabak Sultan", category: "food", image: "https://picsum.photos/id/429/600/400", description: "Gerobak Kayu Klasik" },
@@ -115,12 +113,12 @@ const defaultDesignServices: DesignServiceItem[] = [
 
 const defaultGeneralSettings: GeneralSettings = {
   aboutTitle: "Mitra Terpercaya Membangun Branding Usaha Anda",
-  aboutDescription: "KreasiBooth berdiri sejak 2015, berawal dari bengkel las kecil kini menjadi spesialis manufaktur booth dan gerobak modern. Kami memadukan seni desain dengan ketahanan konstruksi untuk menciptakan tempat usaha yang tidak hanya fungsional, tapi juga 'Instagrammable'.",
+  aboutDescription: "CiptaKreasiBooth berdiri sejak 2015, berawal dari bengkel las kecil kini menjadi spesialis manufaktur booth dan gerobak modern. Kami memadukan seni desain dengan ketahanan konstruksi untuk menciptakan tempat usaha yang tidak hanya fungsional, tapi juga 'Instagrammable'.",
   aboutImage: "https://picsum.photos/id/1/800/600",
   whatsapp: "6281316426495",
   address: "Jakarta Selatan",
-  instagram: "@kreasibooth",
-  email: "admin@kreasibooth.com",
+  instagram: "@ciptakreasibooth",
+  email: "admin@ciptakreasibooth.com",
   workshopVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-working-in-a-carpentry-workshop-40502-large.mp4"
 };
 
@@ -187,7 +185,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Load from local storage
     const loadData = () => {
       const storedProjects = localStorage.getItem('kb_projects');
       const storedTestimonials = localStorage.getItem('kb_testimonials');
@@ -233,47 +230,38 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [projects, testimonials, services, products, heroSlides, pricingItems, galleryItems, designServices, generalSettings, isLoaded]);
 
-  // Projects CRUD
   const addProject = (item: Project) => setProjects(prev => [...prev, { ...item, id: Date.now() }]);
   const updateProject = (item: Project) => setProjects(prev => prev.map(p => p.id === item.id ? item : p));
   const deleteProject = (id: number) => setProjects(prev => prev.filter(p => p.id !== id));
 
-  // Testimonials CRUD
   const addTestimonial = (item: Testimonial) => setTestimonials(prev => [...prev, { ...item, id: Date.now() }]);
   const updateTestimonial = (item: Testimonial) => setTestimonials(prev => prev.map(t => t.id === item.id ? item : t));
   const deleteTestimonial = (id: number) => setTestimonials(prev => prev.filter(t => t.id !== id));
 
-  // Products CRUD
   const addProduct = (item: ProductItem) => setProducts(prev => [...prev, { ...item, id: Date.now() }]);
   const updateProduct = (item: ProductItem) => setProducts(prev => prev.map(p => p.id === item.id ? item : p));
   const deleteProduct = (id: number) => setProducts(prev => prev.filter(p => p.id !== id));
 
-  // Services CRUD
   const addService = (item: ServiceItem) => setServices(prev => [...prev, { ...item, id: Date.now() }]);
   const updateService = (item: ServiceItem) => setServices(prev => prev.map(s => s.id === item.id ? item : s));
   const deleteService = (id: number) => setServices(prev => prev.filter(s => s.id !== id));
 
-  // Hero CRUD
   const addHeroSlide = (item: HeroSlide) => setHeroSlides(prev => [...prev, { ...item, id: Date.now() }]);
   const updateHeroSlide = (item: HeroSlide) => setHeroSlides(prev => prev.map(h => h.id === item.id ? item : h));
   const deleteHeroSlide = (id: number) => setHeroSlides(prev => prev.filter(h => h.id !== id));
   
-  // Pricing CRUD
   const addPricingItem = (item: PricingItem) => setPricingItems(prev => [...prev, { ...item, id: Date.now() }]);
   const updatePricingItem = (item: PricingItem) => setPricingItems(prev => prev.map(p => p.id === item.id ? item : p));
   const deletePricingItem = (id: number) => setPricingItems(prev => prev.filter(p => p.id !== id));
 
-  // Gallery CRUD
   const addGalleryItem = (item: GalleryItem) => setGalleryItems(prev => [...prev, { ...item, id: Date.now() }]);
   const updateGalleryItem = (item: GalleryItem) => setGalleryItems(prev => prev.map(g => g.id === item.id ? item : g));
   const deleteGalleryItem = (id: number) => setGalleryItems(prev => prev.filter(g => g.id !== id));
 
-  // Design Services CRUD
   const addDesignService = (item: DesignServiceItem) => setDesignServices(prev => [...prev, { ...item, id: Date.now() }]);
   const updateDesignService = (item: DesignServiceItem) => setDesignServices(prev => prev.map(d => d.id === item.id ? item : d));
   const deleteDesignService = (id: number) => setDesignServices(prev => prev.filter(d => d.id !== id));
 
-  // General Settings Update
   const updateGeneralSettings = (settings: GeneralSettings) => setGeneralSettings(settings);
 
   const resetData = () => {

@@ -1,13 +1,12 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
-import { Phone, MapPin, Mail, Instagram, Send, Calculator, AlertCircle, ShoppingCart, Upload, FileImage } from 'lucide-react';
+import { Phone, MapPin, Mail, Instagram, Send, Calculator, AlertCircle, ShoppingCart, Upload, FileImage, CreditCard } from 'lucide-react';
 import { PriceSimulationConfig, PricingItem } from '../types';
 import { useData } from '../context/DataContext';
+import PaymentModal from './PaymentModal';
 
 const OrderForm: React.FC = () => {
   const { generalSettings, pricingItems } = useData();
 
-  // State untuk Form Data Diri
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -15,23 +14,20 @@ const OrderForm: React.FC = () => {
     message: ''
   });
 
-  // State untuk Attachment
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
-  // Filter materials and addons
   const materials = pricingItems.filter(item => item.type === 'material');
   const addons = pricingItems.filter(item => item.type === 'addon');
 
-  // State untuk Kalkulator
   const [config, setConfig] = useState<PriceSimulationConfig>({
     length: 100,
     width: 60,
     height: 200,
-    materialId: 0, // Will default in useEffect
+    materialId: 0,
     selectedAddons: [],
   });
 
-  // Set default material when items are loaded
   useEffect(() => {
     if (materials.length > 0 && config.materialId === 0) {
       setConfig(prev => ({ ...prev, materialId: materials[0].id }));
@@ -42,18 +38,13 @@ const OrderForm: React.FC = () => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
   };
 
-  // Logika Perhitungan Harga Dinamis
   const estimatedPrice = useMemo(() => {
-    // Volume factor roughly (Linear meter equivalent approximation for logic)
     const volumeFactor = (config.length + config.width) / 100; 
-    
-    // Get selected material price
     const selectedMaterial = materials.find(m => m.id === config.materialId);
     const basePricePerMeter = selectedMaterial ? selectedMaterial.price : 0;
 
     let total = volumeFactor * basePricePerMeter;
 
-    // Add addons prices
     config.selectedAddons.forEach(addonId => {
       const addon = addons.find(a => a.id === addonId);
       if (addon) {
@@ -83,6 +74,11 @@ const OrderForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsPaymentOpen(true);
+  };
+
+  const handlePaymentSuccess = (transactionId: string) => {
+    setIsPaymentOpen(false);
 
     const selectedMaterial = materials.find(m => m.id === config.materialId);
     const selectedAddonNames = config.selectedAddons
@@ -90,25 +86,26 @@ const OrderForm: React.FC = () => {
       .filter(Boolean)
       .join(', ');
 
-    // Format Pesan WhatsApp
-    const message = `Halo KreasiBooth, saya ingin memesan/konsultasi:
+    const message = `Halo CiptaKreasiBooth, saya telah melakukan pembayaran:
+
+*STATUS PEMBAYARAN: LUNAS ✅*
+ID Transaksi: ${transactionId}
 
 *DATA PEMESAN*
 Nama: ${formData.name}
 No WA: ${formData.phone}
 Alamat: ${formData.address || '-'}
 
-*DETAIL ESTIMASI (Dari Website)*
+*DETAIL ORDER (Dari Website)*
 Ukuran: ${config.length} x ${config.width} x ${config.height} cm
 Material: ${selectedMaterial ? selectedMaterial.name : '-'}
 Add-ons: ${selectedAddonNames || 'Tidak ada'}
-*Estimasi Harga: ${formatRupiah(estimatedPrice)}*
+*Total Biaya: ${formatRupiah(estimatedPrice)}*
 
 *PESAN TAMBAHAN*
 ${formData.message || '-'}
 ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${attachmentName}) setelah chat ini terbuka.` : ''}`;
 
-    // Encode dan buka WhatsApp (gunakan nomor dari settings)
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${generalSettings.whatsapp}?text=${encodedMessage}`;
     
@@ -122,13 +119,12 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
           <h2 className="text-orange-500 font-semibold tracking-wide uppercase mb-2">Pemesanan</h2>
           <h3 className="text-3xl md:text-4xl font-bold text-slate-800">Mulai Bisnis Anda Sekarang</h3>
           <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-            Isi formulir di bawah ini untuk konsultasi langsung via WhatsApp. Anda bisa menghitung estimasi biaya terlebih dahulu menggunakan kalkulator kami.
+            Isi formulir di bawah ini. Anda dapat melakukan pembayaran aman melalui Payment Gateway kami.
           </p>
         </div>
 
         <div className="flex flex-col xl:flex-row gap-8 items-start">
           
-          {/* KOLOM 1: KALKULATOR (KIRI) */}
           <div id="simulation" className="w-full xl:w-1/2 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden scroll-mt-24">
             <div className="bg-slate-800 p-6 text-white flex justify-between items-center">
               <div className="flex items-center gap-3">
@@ -145,14 +141,13 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                 <p className="text-2xl font-bold text-orange-400">{formatRupiah(estimatedPrice)}</p>
               </div>
             </div>
-
+            
             <div className="p-8 space-y-6">
                <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex gap-3">
                   <AlertCircle className="text-blue-500 flex-shrink-0" size={20} />
-                  <p className="text-sm text-blue-700">Harga ini hanyalah estimasi kasar sistem. Harga final ditentukan setelah diskusi detail desain.</p>
+                  <p className="text-sm text-blue-700">Harga ini hanyalah estimasi. Pembayaran akan menjamin antrian produksi.</p>
                </div>
 
-               {/* Dimensi */}
                <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Panjang (cm)</label>
@@ -183,7 +178,6 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                 </div>
               </div>
 
-              {/* Material */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-3">Pilih Material Utama</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -202,11 +196,9 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                       {config.materialId === mat.id && <div className="w-2 h-2 rounded-full bg-orange-500"></div>}
                     </button>
                   ))}
-                  {materials.length === 0 && <p className="text-sm text-slate-400 italic">Tidak ada material tersedia.</p>}
                 </div>
               </div>
 
-              {/* Add-ons */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-3">Fitur Tambahan</label>
                 <div className="space-y-3">
@@ -221,18 +213,16 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                         />
                       </label>
                   ))}
-                  {addons.length === 0 && <p className="text-sm text-slate-400 italic">Tidak ada fitur tambahan tersedia.</p>}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* KOLOM 2: FORM ORDER (KANAN) */}
           <div className="w-full xl:w-1/2 flex flex-col h-full">
             <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 flex-grow">
                <div className="mb-8 border-b border-slate-100 pb-6">
                  <h4 className="text-2xl font-bold text-slate-800 mb-2">Formulir Pemesanan</h4>
-                 <p className="text-slate-500">Data Anda akan dikirim langsung ke WhatsApp Admin.</p>
+                 <p className="text-slate-500">Lengkapi data untuk melanjutkan ke pembayaran.</p>
                </div>
 
                <form onSubmit={handleSubmit} className="space-y-6">
@@ -261,20 +251,19 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Lokasi Pengiriman (Kota)</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Lokasi Pengiriman</label>
                       <input
                         type="text"
                         value={formData.address}
                         onChange={(e) => setFormData({...formData, address: e.target.value})}
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                        placeholder="Contoh: Jakarta Selatan"
+                        placeholder="Kota / Alamat"
                       />
                     </div>
                   </div>
 
-                  {/* FILE UPLOAD SECTION */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Lampiran Foto / Desain (Opsional)</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Lampiran (Opsional)</label>
                     <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition-colors cursor-pointer group">
                         <input 
                             type="file" 
@@ -287,54 +276,36 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                                 {attachmentName ? <FileImage size={24} /> : <Upload size={24} />}
                             </div>
                             {attachmentName ? (
-                                <div>
-                                    <p className="text-sm font-bold text-green-600 truncate max-w-[200px]">{attachmentName}</p>
-                                    <p className="text-xs text-slate-400">File siap dikirim</p>
-                                </div>
+                                <p className="text-sm font-bold text-green-600 truncate max-w-[200px]">{attachmentName}</p>
                             ) : (
-                                <div>
-                                    <p className="text-sm font-medium text-slate-600">Klik untuk upload foto referensi</p>
-                                    <p className="text-xs text-slate-400 mt-1">Format JPG/PNG</p>
-                                </div>
+                                <p className="text-sm font-medium text-slate-600">Upload referensi gambar</p>
                             )}
                         </div>
                     </div>
-                    {attachmentName && (
-                        <p className="text-xs text-orange-500 mt-2 flex items-start gap-1">
-                            <AlertCircle size={12} className="mt-0.5 flex-shrink-0" />
-                            File gambar akan dikirimkan manual oleh Anda setelah chat WhatsApp terbuka.
-                        </p>
-                    )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Pesan Tambahan / Request Khusus</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Pesan Tambahan</label>
                     <textarea
                       rows={4}
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all resize-none"
-                      placeholder="Ceritakan detail model, warna, atau kebutuhan khusus lainnya..."
                     ></textarea>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-3 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-3 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
                   >
-                    <Send size={20} />
-                    <span>Kirim Pesanan ke WhatsApp</span>
+                    <CreditCard size={20} />
+                    <span>Lanjut ke Pembayaran</span>
                   </button>
-
-                  <p className="text-center text-xs text-slate-400 mt-4">
-                    Dengan mengklik tombol di atas, Anda akan diarahkan ke aplikasi WhatsApp.
-                  </p>
                </form>
             </div>
 
-            {/* Kontak Info Mini */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-slate-100 flex items-center gap-3 shadow-sm">
+                 <div className="bg-white p-4 rounded-xl border border-slate-100 flex items-center gap-3 shadow-sm">
                    <div className="bg-orange-100 p-2 rounded-full text-orange-600"><MapPin size={18} /></div>
                    <div>
                       <p className="text-xs text-slate-400 font-bold uppercase">Workshop</p>
@@ -355,7 +326,6 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                       <p className="text-sm font-medium text-slate-700">{generalSettings.instagram}</p>
                    </div>
                 </div>
-                {/* Email Item */}
                 <div className="bg-white p-4 rounded-xl border border-slate-100 flex items-center gap-3 shadow-sm">
                    <div className="bg-blue-100 p-2 rounded-full text-blue-600"><Mail size={18} /></div>
                    <div>
@@ -364,11 +334,18 @@ ${attachmentName ? `\n*CATATAN*: Saya akan mengirimkan lampiran foto/desain (${a
                    </div>
                 </div>
             </div>
-
           </div>
-
         </div>
       </div>
+
+      <PaymentModal 
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        amount={estimatedPrice}
+        itemName="Pembuatan Booth Custom"
+        customerName={formData.name || 'Pelanggan'}
+        onSuccess={handlePaymentSuccess}
+      />
     </section>
   );
 };

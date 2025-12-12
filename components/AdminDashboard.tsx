@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { Project, Testimonial, ProductItem, ServiceItem, HeroSlide, GeneralSettings, PricingItem, GalleryItem, DesignServiceItem } from '../types';
@@ -12,11 +11,9 @@ interface EditModalProps {
   onSave: (data: any) => void;
 }
 
-// Komponen Modal dipisah agar tidak re-render saat mengetik
 const EditModal: React.FC<EditModalProps> = ({ activeTab, editingItem, onClose, onSave }) => {
   const [formData, setFormData] = useState<any>(() => {
     if (editingItem) {
-      // If design service, join features array to string for textarea
       if (activeTab === 'design_services') {
          return { ...editingItem, features: editingItem.features.join('\n') };
       }
@@ -50,7 +47,6 @@ const EditModal: React.FC<EditModalProps> = ({ activeTab, editingItem, onClose, 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (activeTab === 'design_services') {
-        // Convert textarea features string back to array
         const featuresArray = formData.features.split('\n').filter((f: string) => f.trim() !== '');
         onSave({ ...formData, features: featuresArray });
     } else {
@@ -329,10 +325,8 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [modalType, setModalType] = useState<'projects' | 'testimonials' | 'products' | 'services' | 'hero' | 'pricing' | 'gallery' | 'design_services'>('projects');
   
-  // State khusus untuk form settings agar tidak re-render parent
   const [settingsForm, setSettingsForm] = useState<GeneralSettings>(generalSettings);
 
-  // Sync settings form when generalSettings changes (initial load)
   useEffect(() => {
     setSettingsForm(generalSettings);
   }, [generalSettings]);
@@ -405,7 +399,7 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     <div className="min-h-screen bg-slate-100 font-sans">
       <div className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md sticky top-0 z-40">
         <div className="flex items-center gap-2">
-            <span className="font-bold text-xl">KreasiBooth <span className="text-orange-500">Admin</span></span>
+            <span className="font-bold text-xl">CiptaKreasiBooth <span className="text-orange-500">Admin</span></span>
             <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded border border-orange-500/30">CMS Dashboard</span>
         </div>
         <div className="flex items-center gap-4">
@@ -459,8 +453,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
              </div>
              
              <form onSubmit={handleSettingsSubmit} className="space-y-12">
-               {/* ... (Existing Settings Form) ... */}
-               {/* KOLOM INFORMASI PERUSAHAAN */}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <h3 className="text-lg font-bold text-orange-500 border-b pb-2">Halaman "Tentang Kami"</h3>
@@ -536,7 +528,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                   </div>
                </div>
 
-               {/* KOLOM PENGATURAN HARGA DINAMIS */}
                <div className="border-t pt-8">
                   <div className="flex justify-between items-center mb-6 border-b pb-4">
                       <h3 className="text-lg font-bold text-orange-500 flex items-center gap-2">
@@ -548,7 +539,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     {/* Harga Material */}
                      <div className="space-y-4">
                         <h4 className="font-bold text-slate-700 text-sm uppercase bg-slate-50 p-2 rounded">Harga Material (Per Meter)</h4>
                         <div className="space-y-2">
@@ -568,7 +558,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                         </div>
                      </div>
 
-                     {/* Harga Addons */}
                      <div className="space-y-4">
                         <h4 className="font-bold text-slate-700 text-sm uppercase bg-slate-50 p-2 rounded">Harga Fitur Tambahan (Add-on)</h4>
                         <div className="space-y-2">
@@ -598,7 +587,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
              </div>
 
              <div className="grid grid-cols-1 gap-12">
-                {/* VIDEO URL SETTING */}
                 <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
                       <Video size={20} className="text-orange-500" /> Pengaturan Video Workshop
@@ -617,7 +605,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                    <p className="text-xs text-slate-500 mt-2">Masukkan link video format .mp4 agar dapat diputar langsung di halaman portofolio.</p>
                 </div>
 
-                {/* GALLERY LIST */}
                 <div>
                    <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -683,7 +670,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {/* ... Table logic remains similar ... */}
                         {activeTab === 'projects' && projects.map((item) => (
                             <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-6 py-4 text-slate-400">#{item.id}</td>
