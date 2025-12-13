@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, QrCode, CreditCard, Smartphone, CheckCircle2, Loader2, Copy, ShieldCheck } from 'lucide-react';
+import { X, QrCode, CreditCard, CheckCircle2, Loader2, Copy, ShieldCheck, AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -11,7 +11,7 @@ interface PaymentModalProps {
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, itemName, customerName, onSuccess }) => {
-  const [step, setStep] = useState<'method' | 'process' | 'success'>('method');
+  const [step, setStep] = useState<'method' | 'process' | 'success' | 'error'>('method');
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [transactionId, setTransactionId] = useState('');
@@ -30,14 +30,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, it
     setStep('process');
   };
 
-  const handlePaymentConfirm = () => {
+  const handlePaymentConfirm = (simulateFailure: boolean = false) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      setStep('success');
-      setTimeout(() => {
-        onSuccess(transactionId);
-      }, 2000);
+      
+      if (simulateFailure) {
+        setStep('error');
+      } else {
+        setStep('success');
+        setTimeout(() => {
+          onSuccess(transactionId);
+        }, 2000);
+      }
     }, 2000);
   };
 
@@ -131,19 +136,31 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, it
                  <p className="font-bold text-orange-600 animate-pulse">23:59:59</p>
               </div>
 
-              <button 
-                onClick={handlePaymentConfirm}
-                disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
-              >
-                {isLoading ? (
-                    <>
-                        <Loader2 className="animate-spin" /> Memproses...
-                    </>
-                ) : (
-                    "Saya Sudah Bayar"
+              <div className="space-y-3">
+                <button 
+                  onClick={() => handlePaymentConfirm(false)}
+                  disabled={isLoading}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                      <>
+                          <Loader2 className="animate-spin" /> Memproses...
+                      </>
+                  ) : (
+                      "Saya Sudah Bayar"
+                  )}
+                </button>
+
+                {/* Tombol Simulasi Error untuk Testing */}
+                {!isLoading && (
+                  <button 
+                    onClick={() => handlePaymentConfirm(true)}
+                    className="w-full bg-red-50 text-red-600 hover:bg-red-100 font-medium py-3 rounded-xl transition-all text-sm border border-red-100"
+                  >
+                    Simulasi Gagal (Demo)
+                  </button>
                 )}
-              </button>
+              </div>
               
               <button onClick={() => setStep('method')} className="text-sm text-slate-500 hover:text-slate-800 hover:underline">
                 Ganti Metode
@@ -159,6 +176,31 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, it
                <h3 className="text-2xl font-bold text-slate-800 mb-2">Pembayaran Berhasil!</h3>
                <p className="text-slate-500 mb-8">Terima kasih, {customerName}. Pesanan Anda sedang diproses.</p>
                <p className="text-xs text-slate-400">Mengalihkan ke WhatsApp...</p>
+            </div>
+          )}
+
+          {step === 'error' && (
+            <div className="text-center py-8">
+               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <AlertTriangle size={40} className="text-red-600" />
+               </div>
+               <h3 className="text-2xl font-bold text-slate-800 mb-2">Pembayaran Gagal</h3>
+               <p className="text-slate-500 mb-6 text-sm">Maaf, sistem tidak dapat memverifikasi pembayaran Anda. Pastikan saldo mencukupi atau coba metode lain.</p>
+               
+               <div className="flex gap-3">
+                 <button 
+                   onClick={() => setStep('process')}
+                   className="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                 >
+                   <RefreshCw size={18} /> Coba Lagi
+                 </button>
+                 <button 
+                   onClick={() => setStep('method')}
+                   className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl transition-all"
+                 >
+                   Ganti Metode
+                 </button>
+               </div>
             </div>
           )}
 

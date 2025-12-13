@@ -1,59 +1,78 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Calculator, AlertCircle } from 'lucide-react';
-
-enum MaterialType {
-  WOOD = 'Kayu Jati Belanda',
-  IRON = 'Besi Hollow + Galvalum',
-  ALUMINIUM = 'Aluminium Kaca',
-  CONTAINER = 'Modifikasi Container'
-}
+import { useData } from '../context/DataContext';
+import { PricingItem } from '../types';
 
 interface PriceSimulationConfig {
   length: number;
   width: number;
   height: number;
-  material: MaterialType;
-  hasRoof: boolean;
-  hasWheels: boolean;
-  hasNeonBox: boolean;
+  materialId: number;
+  selectedAddons: number[];
 }
 
 const PriceSimulator: React.FC = () => {
+  const { pricingItems } = useData();
+  
+  // Filter items for cleaner usage
+  const materials = useMemo(() => pricingItems.filter(p => p.type === 'material'), [pricingItems]);
+  const addons = useMemo(() => pricingItems.filter(p => p.type === 'addon'), [pricingItems]);
+
   const [config, setConfig] = useState<PriceSimulationConfig>({
     length: 100,
     width: 60,
     height: 200,
-    material: MaterialType.WOOD,
-    hasRoof: true,
-    hasWheels: true,
-    hasNeonBox: false,
+    materialId: 0,
+    selectedAddons: [],
   });
 
+  // Set default material when data loads
+  useEffect(() => {
+    if (materials.length > 0 && config.materialId === 0) {
+        setConfig(prev => ({ ...prev, materialId: materials[0].id }));
+    }
+  }, [materials, config.materialId]);
+
   const estimatedPrice = useMemo(() => {
-    // Base Calculation Logic (Simplified for Demo)
-    // Calculate Volume factor roughly
+    // Base Calculation Logic
+    // Calculate Volume factor roughly for estimation
     const volumeFactor = (config.length + config.width) / 100; // Meters linear equivalent
     
-    let basePricePerMeter = 0;
-    switch (config.material) {
-      case MaterialType.WOOD: basePricePerMeter = 1500000; break;
-      case MaterialType.IRON: basePricePerMeter = 1800000; break;
-      case MaterialType.ALUMINIUM: basePricePerMeter = 1200000; break;
-      case MaterialType.CONTAINER: basePricePerMeter = 2500000; break;
-    }
+    // Find selected material price
+    const selectedMaterial = materials.find(m => m.id === config.materialId);
+    const basePricePerMeter = selectedMaterial ? selectedMaterial.price : 0;
 
     let total = volumeFactor * basePricePerMeter;
 
-    if (config.hasRoof) total += 500000;
-    if (config.hasWheels) total += 300000;
-    if (config.hasNeonBox) total += 850000;
+    // Add addons prices
+    config.selectedAddons.forEach(addonId => {
+        const addon = addons.find(a => a.id === addonId);
+        if (addon) {
+            total += addon.price;
+        }
+    });
 
     return Math.round(total);
-  }, [config]);
+  }, [config, materials, addons]);
+
+  const toggleAddon = (addonId: number) => {
+    setConfig(prev => {
+        const isSelected = prev.selectedAddons.includes(addonId);
+        if (isSelected) {
+            return { ...prev, selectedAddons: prev.selectedAddons.filter(id => id !== addonId) };
+        } else {
+            return { ...prev, selectedAddons: [...prev.selectedAddons, addonId] };
+        }
+    });
+  };
 
   const formatRupiah = (num: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
   };
+
+  if (materials.length === 0) {
+      return null; // Don't render if no data
+  }
 
   return (
     <section id="simulation" className="py-20 bg-slate-800 text-white relative overflow-hidden scroll-mt-24">
@@ -129,17 +148,17 @@ const PriceSimulator: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Pilihan Material</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {Object.values(MaterialType).map((mat) => (
+                  {materials.map((mat) => (
                     <button
-                      key={mat}
-                      onClick={() => setConfig({...config, material: mat})}
+                      key={mat.id}
+                      onClick={() => setConfig({...config, materialId: mat.id})}
                       className={`px-4 py-3 rounded-lg border text-sm font-medium transition-all text-left ${
-                        config.material === mat 
+                        config.materialId === mat.id 
                         ? 'border-orange-500 bg-orange-50 text-orange-700 ring-1 ring-orange-500' 
                         : 'border-slate-200 text-slate-600 hover:border-orange-300'
                       }`}
                     >
-                      {mat}
+                      {mat.name}
                     </button>
                   ))}
                 </div>
@@ -149,33 +168,18 @@ const PriceSimulator: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Tambahan</label>
                 <div className="space-y-3">
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={config.hasRoof}
-                      onChange={(e) => setConfig({...config, hasRoof: e.target.checked})}
-                      className="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                    />
-                    <span className="text-slate-700">Atap / Kanopi (+ Rp 500rb)</span>
-                  </label>
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={config.hasWheels}
-                      onChange={(e) => setConfig({...config, hasWheels: e.target.checked})}
-                      className="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                    />
-                    <span className="text-slate-700">Roda Gerobak (+ Rp 300rb)</span>
-                  </label>
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={config.hasNeonBox}
-                      onChange={(e) => setConfig({...config, hasNeonBox: e.target.checked})}
-                      className="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                    />
-                    <span className="text-slate-700">Neon Box Branding (+ Rp 850rb)</span>
-                  </label>
+                  {addons.map((addon) => (
+                      <label key={addon.id} className="flex items-center space-x-3 cursor-pointer hover:bg-slate-50 p-2 rounded -ml-2 transition-colors">
+                        <input 
+                          type="checkbox" 
+                          checked={config.selectedAddons.includes(addon.id)}
+                          onChange={() => toggleAddon(addon.id)}
+                          className="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500 accent-orange-500"
+                        />
+                        <span className="text-slate-700 text-sm flex-1">{addon.name}</span>
+                        <span className="text-xs font-bold text-orange-500">+ {formatRupiah(addon.price)}</span>
+                      </label>
+                  ))}
                 </div>
               </div>
             </div>

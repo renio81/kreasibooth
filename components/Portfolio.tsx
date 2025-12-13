@@ -127,6 +127,12 @@ const Portfolio: React.FC = () => {
     return url;
   };
 
+  // Helper to check if url is a video file or blob
+  const isDirectVideo = (url: string) => {
+      if (!url) return false;
+      return url.endsWith('.mp4') || url.startsWith('blob:') || url.startsWith('data:video/');
+  };
+
   return (
     <section id="portfolio" className="py-20 bg-white scroll-mt-24">
        <style>{`
@@ -284,8 +290,8 @@ const Portfolio: React.FC = () => {
                     <PlayCircle className="text-orange-500" size={24} /> Workshop Activity
                  </h4>
                  <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black aspect-video group border border-slate-100">
-                    {/* Prioritaskan Embed Iframe kecuali jika extension .mp4 */}
-                    {generalSettings.workshopVideoUrl && generalSettings.workshopVideoUrl.endsWith('.mp4') ? (
+                    {/* Prioritaskan Embed Iframe kecuali jika extension .mp4 atau blob */}
+                    {isDirectVideo(generalSettings.workshopVideoUrl) ? (
                          <video 
                            key={generalSettings.workshopVideoUrl}
                            autoPlay 
