@@ -184,29 +184,30 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [generalSettings, setGeneralSettings] = useState<GeneralSettings>(defaultGeneralSettings);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Helper untuk parsing JSON dengan aman
+  const safeParse = (data: string | null, fallback: any) => {
+    try {
+      return data ? JSON.parse(data) : fallback;
+    } catch (e) {
+      console.error("Data Parse Error", e);
+      return fallback;
+    }
+  };
+
   useEffect(() => {
     const loadData = () => {
-      const storedProjects = localStorage.getItem('kb_projects');
-      const storedTestimonials = localStorage.getItem('kb_testimonials');
-      const storedServices = localStorage.getItem('kb_services');
-      const storedProducts = localStorage.getItem('kb_products');
-      const storedHero = localStorage.getItem('kb_hero');
-      const storedPricing = localStorage.getItem('kb_pricing');
-      const storedGallery = localStorage.getItem('kb_gallery');
-      const storedDesignServices = localStorage.getItem('kb_design_services');
-      const storedSettings = localStorage.getItem('kb_settings');
-
-      setProjects(storedProjects ? JSON.parse(storedProjects) : defaultProjects);
-      setTestimonials(storedTestimonials ? JSON.parse(storedTestimonials) : defaultTestimonials);
-      setServices(storedServices ? JSON.parse(storedServices) : defaultServices);
-      setProducts(storedProducts ? JSON.parse(storedProducts) : defaultProducts);
-      setHeroSlides(storedHero ? JSON.parse(storedHero) : defaultHeroSlides);
-      setPricingItems(storedPricing ? JSON.parse(storedPricing) : defaultPricingItems);
-      setGalleryItems(storedGallery ? JSON.parse(storedGallery) : defaultGalleryItems);
-      setDesignServices(storedDesignServices ? JSON.parse(storedDesignServices) : defaultDesignServices);
+      setProjects(safeParse(localStorage.getItem('kb_projects'), defaultProjects));
+      setTestimonials(safeParse(localStorage.getItem('kb_testimonials'), defaultTestimonials));
+      setServices(safeParse(localStorage.getItem('kb_services'), defaultServices));
+      setProducts(safeParse(localStorage.getItem('kb_products'), defaultProducts));
+      setHeroSlides(safeParse(localStorage.getItem('kb_hero'), defaultHeroSlides));
+      setPricingItems(safeParse(localStorage.getItem('kb_pricing'), defaultPricingItems));
+      setGalleryItems(safeParse(localStorage.getItem('kb_gallery'), defaultGalleryItems));
+      setDesignServices(safeParse(localStorage.getItem('kb_design_services'), defaultDesignServices));
       
-      if (storedSettings) {
-        setGeneralSettings({ ...defaultGeneralSettings, ...JSON.parse(storedSettings) });
+      const settings = safeParse(localStorage.getItem('kb_settings'), null);
+      if (settings) {
+        setGeneralSettings({ ...defaultGeneralSettings, ...settings });
       } else {
         setGeneralSettings(defaultGeneralSettings);
       }
@@ -214,6 +215,48 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoaded(true);
     };
     loadData();
+  }, []);
+
+  // Sync data across tabs/windows in real-time
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!e.newValue) return;
+
+      switch (e.key) {
+        case 'kb_projects':
+          setProjects(safeParse(e.newValue, defaultProjects));
+          break;
+        case 'kb_testimonials':
+          setTestimonials(safeParse(e.newValue, defaultTestimonials));
+          break;
+        case 'kb_services':
+          setServices(safeParse(e.newValue, defaultServices));
+          break;
+        case 'kb_products':
+          setProducts(safeParse(e.newValue, defaultProducts));
+          break;
+        case 'kb_hero':
+          setHeroSlides(safeParse(e.newValue, defaultHeroSlides));
+          break;
+        case 'kb_pricing':
+          setPricingItems(safeParse(e.newValue, defaultPricingItems));
+          break;
+        case 'kb_gallery':
+          setGalleryItems(safeParse(e.newValue, defaultGalleryItems));
+          break;
+        case 'kb_design_services':
+          setDesignServices(safeParse(e.newValue, defaultDesignServices));
+          break;
+        case 'kb_settings':
+          setGeneralSettings(prev => ({ ...prev, ...safeParse(e.newValue, defaultGeneralSettings) }));
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   useEffect(() => {
