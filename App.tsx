@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -10,6 +9,7 @@ import DesignServices from './components/DesignServices';
 import Testimonials from './components/Testimonials';
 import OrderForm from './components/OrderForm';
 import Footer from './components/Footer';
+import FloatingWidget from './components/FloatingWidget';
 import AdminDashboard from './components/AdminDashboard';
 import { DataProvider } from './context/DataContext';
 import { Lock, X } from 'lucide-react';
@@ -28,7 +28,7 @@ const LoginModal: React.FC<{ onClose: () => void; onLogin: () => void }> = ({ on
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
       <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-8 relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
           <X size={20} />
@@ -81,7 +81,7 @@ function App() {
   // Jika user biasa, tampilkan Landing Page
   return (
     <DataProvider>
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900 relative">
         <Navbar />
         <main>
           <Hero />
@@ -95,6 +95,8 @@ function App() {
         </main>
         <Footer onAdminLogin={() => setShowLogin(true)} />
         
+        <FloatingWidget />
+
         {showLogin && (
           <LoginModal 
             onClose={() => setShowLogin(false)} 

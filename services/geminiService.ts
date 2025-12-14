@@ -1,13 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const generateDesignConcept = async (businessIdea: string): Promise<string> => {
   if (!process.env.API_KEY) {
     return "Maaf, API Key belum dikonfigurasi. Silakan hubungi administrator.";
   }
 
   try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: `Bertindaklah sebagai konsultan desain booth dan branding profesional. 
@@ -35,6 +34,7 @@ export const generateBoothImage = async (prompt: string): Promise<string | null>
   }
 
   try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
@@ -44,6 +44,11 @@ export const generateBoothImage = async (prompt: string): Promise<string | null>
             Pastikan gambar terlihat profesional, pencahayaan bagus, dan menampilkan bentuk booth dengan jelas. Style: Modern, 3D Render, Architectural Visualization.` 
           }
         ]
+      },
+      config: {
+        imageConfig: {
+          aspectRatio: "1:1"
+        }
       }
     });
 
@@ -56,6 +61,7 @@ export const generateBoothImage = async (prompt: string): Promise<string | null>
       }
     }
     
+    console.warn("No image data found in response parts");
     return null;
   } catch (error) {
     console.error("Error generating image:", error);

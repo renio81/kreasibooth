@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Sparkles, Send, Loader2, Image as ImageIcon, MessageSquare, Download } from 'lucide-react';
+import { Sparkles, Send, Loader2, Image as ImageIcon, MessageSquare, Download, AlertTriangle } from 'lucide-react';
 import { generateDesignConcept, generateBoothImage } from '../services/geminiService';
 
 const AIConsultant: React.FC = () => {
   const [prompt, setPrompt] = useState('');
   const [textResult, setTextResult] = useState<string | null>(null);
   const [imageResult, setImageResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loadingText, setLoadingText] = useState(false);
   const [loadingImage, setLoadingImage] = useState(false);
   const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
@@ -15,8 +16,10 @@ const AIConsultant: React.FC = () => {
     if (!prompt.trim()) return;
 
     setLoadingText(true);
-    setTextResult(null); 
+    setTextResult(null);
+    setError(null);
     setActiveTab('text');
+    
     const aiResponse = await generateDesignConcept(prompt);
     setTextResult(aiResponse);
     setLoadingText(false);
@@ -26,10 +29,18 @@ const AIConsultant: React.FC = () => {
     if (!prompt.trim()) return;
 
     setLoadingImage(true);
-    setImageResult(null); 
+    setImageResult(null);
+    setError(null);
     setActiveTab('image');
+    
     const imageBase64 = await generateBoothImage(prompt);
-    setImageResult(imageBase64);
+    
+    if (imageBase64) {
+        setImageResult(imageBase64);
+    } else {
+        setError("Maaf, gagal membuat gambar. Kemungkinan permintaan sedang tinggi atau deskripsi melanggar kebijakan keamanan. Silakan coba lagi dengan deskripsi berbeda.");
+    }
+    
     setLoadingImage(false);
   };
 
@@ -101,7 +112,16 @@ const AIConsultant: React.FC = () => {
             </div>
         </div>
 
-        {(textResult || imageResult) && (
+        {error && (
+            <div className="mt-8 animate-fade-in max-w-2xl mx-auto">
+                <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 flex items-center gap-3 text-red-200 text-left">
+                    <AlertTriangle className="flex-shrink-0" size={24} />
+                    <p>{error}</p>
+                </div>
+            </div>
+        )}
+
+        {(textResult || imageResult) && !error && (
           <div className="mt-12 animate-fade-in">
              <div className="flex justify-center gap-4 mb-6">
                  {textResult && (
